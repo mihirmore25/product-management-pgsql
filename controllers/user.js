@@ -24,7 +24,7 @@ export const addUser = (req, res) => {
 
         console.log("User Info --> ", userInfo);
 
-        if (userInfo.id === 1) {
+        if (userInfo.id === 6) {
             const query = `
                 INSERT INTO users (username, email, password)
                 VALUES ($1, $2, $3) RETURNING *
@@ -123,7 +123,7 @@ export const updateUser = (req, res) => {
         console.log(userInfo);
         console.log(userId);
 
-        if (userId == userInfo.id || userInfo.id == 1) {
+        if (userId == userInfo.id || userInfo.id == 6) {
             // only user and admin can update user account
             const query = `UPDATE users
                     SET username = $1, password = $2, email = $3
@@ -147,12 +147,51 @@ export const updateUser = (req, res) => {
                 });
             });
         } else {
+            return res.status(403).json({
+                status: false,
+                message: "You can update your own user account only!",
+            });
+        }
+    });
+};
+
+export const deleteUser = (req, res) => {
+    const token = req.cookies.access_token;
+
+    const userId = req.params.id;
+
+    // console.log(token);
+
+    if (!token)
+        return res
+            .status(403)
+            .json({ status: false, message: "Not authorized" });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
+        if (err)
             return res
                 .status(403)
-                .json({
-                    status: false,
-                    message: "You can update your own user account only!",
-                });
+                .json({ status: false, messagel: "Token is not valid!" });
+
+        console.log(`UserId --> ${userId}`, `User Info Id --> ${userInfo.id}`);
+
+        const query = "DELETE FROM users WHERE id = $1 AND id = $2";
+
+        if (userId == userInfo.id || userInfo.id == 6) {
+            db.query(query, [userId, userInfo.id], (err, data) => {
+                if (err) return res.status(500).json(err);
+
+                console.log(data.rows);
+
+                return res
+                    .status(200)
+                    .json({ status: true, message: "User has been deleted!" });
+            });
+        } else {
+            return res.status(403).json({
+                status: false,
+                message: "You can only delete your own user account",
+            });
         }
     });
 };
