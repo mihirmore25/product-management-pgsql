@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/users", userRoutes);
 
 const PORT = process.env.APP_PORT || 4000;
 

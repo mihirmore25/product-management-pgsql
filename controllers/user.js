@@ -76,3 +76,30 @@ export const getUsers = (req, res) => {
         });
     });
 };
+
+export const getUser = (req, res) => {
+    console.log(req.params.id);
+    const userId = req.params.id;
+
+    const query = `
+        SELECT username, email FROM users
+        WHERE id = $1
+    `;
+
+    db.query(query, [userId], (err, data) => {
+        if (err) return res.status(500).json(err);
+
+        if (userId && data.rowCount === 0) {
+            return res
+                .status(404)
+                .json({ status: false, message: "User Not Found" });
+        }
+
+        const { password, id, ...other } = data.rows[0];
+
+        return res.status(200).json({
+            status: true,
+            data: other,
+        });
+    });
+};
