@@ -56,3 +56,23 @@ export const addUser = (req, res) => {
         }
     });
 };
+
+export const getUsers = (req, res) => {
+    const query = "SELECT username, email FROM users";
+
+    db.query(query, [], (err, data) => {
+        if (err) return res.status(500).json(err);
+
+        if (data.rowCount === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "Users Not Found!",
+            });
+        }
+
+        return res.status(200).json({
+            status: true,
+            data: data.rows,
+        });
+    });
+};
