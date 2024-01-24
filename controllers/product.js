@@ -70,3 +70,30 @@ export const getProducts = (req, res) => {
         });
     });
 };
+
+export const getProduct = (req, res) => {
+    // GET A SINGLE PRODUCT
+
+    const query = `
+        SELECT 
+            name, description, price, inventory, u.id, username, email
+        FROM products as p
+        JOIN users as u ON p.uid = u.id  
+        WHERE p.id = $1       
+    `;
+
+    db.query(query, [req.params.id], (err, data) => {
+        if (err) return res.status(500).json(err);
+
+        if (req.params.id && data.rowCount === 0) {
+            return res
+                .status(404)
+                .json({ status: false, message: "Product Not Found" });
+        }
+
+        return res.status(200).json({
+            status: true,
+            data: data.rows[0],
+        });
+    });
+};
