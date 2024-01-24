@@ -50,3 +50,23 @@ export const addProduct = (req, res) => {
         });
     });
 };
+
+export const getProducts = (req, res) => {
+    const query =
+        "SELECT name, description, price, inventory, uid FROM products";
+
+    db.query(query, [], (err, data) => {
+        if (err) return res.status(500).json(err);
+
+        if (data.rowCount === 0)
+            return res.status(404).json({
+                status: false,
+                message: "Products Not Found!",
+            });
+
+        return res.status(200).json({
+            status: true,
+            data: data.rows,
+        });
+    });
+};
