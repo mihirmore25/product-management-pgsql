@@ -142,3 +142,42 @@ export const updateProduct = (req, res) => {
         });
     });
 };
+
+export const deleteProduct = (req, res) => {
+    const token = req.cookies.access_token;
+
+    if (!token)
+        return res
+            .status(401)
+            .json({ status: false, message: "Not authenticated" });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
+        if (err)
+            return res
+                .status(403)
+                .json({ status: false, message: "Token is not valid!" });
+
+        const productId = req.params.id;
+
+        const query =
+            "DELETE FROM products WHERE id = $1 AND uid = $2 RETURNING *";
+
+        db.query(query, [productId, userInfo.id], (err, data) => {
+            if (err)
+                return res.status(403).json({
+                    status: false,
+                    message: "You can only delete your own post",
+                });
+
+            const { id, ...other } = data.rows[0];
+
+            return res
+                .status(200)
+                .json({
+                    status: true,
+                    message: "Product has been deleted!",
+                    data: other,
+                });
+        });
+    });
+};
