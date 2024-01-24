@@ -103,3 +103,56 @@ export const getUser = (req, res) => {
         });
     });
 };
+
+export const updateUser = (req, res) => {
+    const token = req.cookies.access_token;
+
+    const userId = req.params.id;
+
+    if (!token)
+        return res
+            .status(403)
+            .json({ status: false, message: "Not authorized" });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
+        if (err)
+            return res
+                .status(403)
+                .json({ status: false, message: "Token is not valid!" });
+
+        console.log(userInfo);
+        console.log(userId);
+
+        if (userId == userInfo.id || userInfo.id == 1) {
+            // only user and admin can update user account
+            const query = `UPDATE users
+                    SET username = $1, password = $2, email = $3
+                    WHERE id = $4 RETURNING *
+                `;
+
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(req.body.password, salt);
+
+            const values = [req.body.username, hash, req.body.email, userId];
+
+            db.query(query, values, (err, data) => {
+                if (err) return res.status(500).json(err);
+                console.log(data.rows[0]);
+
+                const { password, id, ...other } = data.rows[0];
+                return res.status(200).json({
+                    status: true,
+                    message: "User has been updated!",
+                    data: other,
+                });
+            });
+        } else {
+            return res
+                .status(403)
+                .json({
+                    status: false,
+                    message: "You can update your own user account only!",
+                });
+        }
+    });
+};
