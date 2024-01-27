@@ -1,0 +1,9 @@
+<%- include("./partials/header", {title: "Product"}) %>
+<h2><%= product.name %></h2>
+<p><%= product.description %></p>
+<span>$<%= product.price %></span>
+<span>Available : <%= product.inventory %></span>
+<h3><%= product.username %></h3>
+<h4><%= product.email %></h4>
+<a href="/api/v1/products">Back To Products</a>
+<%- include("./partials/footer") %>

@@ -1,0 +1,8 @@
+<%- include("./partials/header", {title: "Users"}); %>
+<ul>
+    <% users.forEach(user => { %>
+    <li><%= user.username %></li>
+    <li><%= user.email %></li>
+    <% }) %>
+</ul>
+<%- include("./partials/footer"); %>

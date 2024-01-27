@@ -1,0 +1,7 @@
+<%- include("./partials/header", {title: "Login"}); %>
+<form action="/api/v1/auth/login" method="post">
+    <input type="text" placeholder="username" name="username" />
+    <input type="password" placeholder="password" name="password" />
+    <button type="submit">Login</button>
+</form>
+<%- include("./partials/footer"); %>

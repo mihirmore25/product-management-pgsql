@@ -22,8 +22,9 @@ db.connect((err, res) => {
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+app.set("view engine", "ejs");
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);

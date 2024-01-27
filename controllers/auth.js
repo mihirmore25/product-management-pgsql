@@ -4,6 +4,14 @@ import { db } from "../db/db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+export const getRegister = (req, res) => {
+    try {
+        res.render("register");
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
 export const register = (req, res) => {
     // console.log(req.body);
 
@@ -17,7 +25,12 @@ export const register = (req, res) => {
 
         // console.log(data.rows);
 
-        if (data.rowCount) return res.status(409).json("User already exist!");
+        // if (data.rowCount) return res.status(409).json("User already exist!");
+        if (data.rowCount)
+            return res.status(409).render("error", {
+                error: res.statusCode,
+                message: "User Already Exist! Please try logging in.",
+            });
 
         // Hash the password and create a user
         const salt = bcrypt.genSaltSync(10);
@@ -46,6 +59,14 @@ export const register = (req, res) => {
     });
 };
 
+export const getLogin = (req, res) => {
+    try {
+        res.render("login");
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
 export const login = (req, res) => {
     // CHECK USER
 
@@ -56,7 +77,10 @@ export const login = (req, res) => {
         if (err) return res.status(500).json(err);
 
         if (data.rowCount === 0) {
-            return res.status(404).json({ message: "User Not Found!" });
+            return res.status(404).render("error", {
+                error: res.statusCode,
+                message: "User Not Found! Try Registering New User.",
+            });
         }
 
         // CHECK PASSWORD
@@ -68,34 +92,46 @@ export const login = (req, res) => {
         if (!isPasswordCorrect)
             return res
                 .status(400)
-                .json({ message: "Wrong Username or Password." });
+                .render("error", {
+                    error: res.statusCode,
+                    message: "Wrong Username or Password.",
+                });
 
         const token = jwt.sign({ id: data.rows[0].id }, process.env.JWT_SECRET);
 
         const { password, ...other } = data.rows[0];
 
-        res.cookie("access_token", token, {
-            httpOnly: true,
-        })
+        // res.cookie("access_token", token, {
+        //     httpOnly: true,
+        // })
+        //     .status(200)
+        //     .json({
+        //         status: true,
+        //         message: "User Logged In Successfully.",
+        //         data: other,
+        //     });
+        res.cookie("access_token", token, { httpOnly: true })
             .status(200)
-            .json({
-                status: true,
-                message: "User Logged In Successfully.",
-                data: other,
-            });
+            .redirect("/api/v1/products");
     });
 };
 
 export const logout = (req, res) => {
     // console.log("Cookie --> ", res);
 
+    // res.clearCookie("access_token", {
+    //     sameSite: "none",
+    //     secure: true,
+    // })
+    //     .status(200)
+    //     .json({
+    //         status: true,
+    //         message: "User has been logged out successfully.",
+    //     });
     res.clearCookie("access_token", {
         sameSite: "none",
         secure: true,
     })
         .status(200)
-        .json({
-            status: true,
-            message: "User has been logged out successfully.",
-        });
+        .redirect("/api/v1/auth/login");
 };

@@ -1,5 +1,7 @@
 import express from "express";
 import {
+    getLogin,
+    getRegister,
     login,
     logout,
     register,
@@ -7,8 +9,8 @@ import {
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/logout", logout);
+router.route("/register").get(getRegister).post(register);
+router.route("/login").get(getLogin).post(login);
+router.get("/logout", logout);
 
 export default router;

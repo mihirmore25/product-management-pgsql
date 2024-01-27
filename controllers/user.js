@@ -70,10 +70,11 @@ export const getUsers = (req, res) => {
             });
         }
 
-        return res.status(200).json({
-            status: true,
-            data: data.rows,
-        });
+        // return res.status(200).json({
+        //     status: true,
+        //     data: data.rows,
+        // });
+        return res.status(200).render("users", { users: data.rows });
     });
 };
 
@@ -97,10 +98,12 @@ export const getUser = (req, res) => {
 
         const { password, id, ...other } = data.rows[0];
 
-        return res.status(200).json({
-            status: true,
-            data: other,
-        });
+        // return res.status(200).json({
+        //     status: true,
+        //     data: other,
+        // });
+
+        res.status(200).render("user", { user: other });
     });
 };
 

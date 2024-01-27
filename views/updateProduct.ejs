@@ -1,0 +1,11 @@
+<%- include("./partials/header", {title: "Update Product"}) %>
+<form action="/api/v1/products/<%= product.id %>/updateProduct" method="post">
+    <input type="text" value="<%= product.name %>" name="name" />
+    <textarea type="text" maxlength="1000" name="description">
+<%= product.description %></textarea>
+    <input type="number" value="<%= product.price %>" name="price" />
+    <input type="number" value="<%= product.inventory %>" name="inventory" />
+    <button type="submit">Update Product</button>
+</form>
+<a href="/api/v1/products">Back To Products</a>
+<%- include("./partials/footer") %>

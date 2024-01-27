@@ -1,0 +1,30 @@
+<%- include("./partials/header", {title: "Products"}) %>
+
+<ul style="list-style: none">
+    <% products.forEach(product => { %>
+    <div
+        class="card"
+        style="
+            border-radius: 8px;
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 20px;
+        "
+    >
+        <li><%= product.name %></li>
+        <li><%= product.description %></li>
+        <li><%= product.price %></li>
+        <li><%= product.inventory %></li>
+        <a href="/api/v1/products/<%= product.id %>">View</a>
+        <% if (user == product.uid) { %>
+        <a href="/api/v1/products/<%= product.id %>/updateProduct"
+            >Update Product</a
+        >
+        <a href="/api/v1/products/<%= product.id %>/delete">Delete</a>
+        <% } %>
+    </div>
+    <% }) %>
+</ul>
+<a href="/api/v1/products/addProduct">Add Product</a>
+<a href="/api/v1/auth/logout">Logout</a>
+<%- include("./partials/footer") %>
